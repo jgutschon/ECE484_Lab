@@ -19,7 +19,8 @@ The inputs "e1" and "e2"are wired  to the corresponding shift register outputs.
 /* Place your sensor SCALING here */
 /* NO scaling is provided for the demo */
 BallPosn = posV ;  /* V to V */
-ServoAng = (3.65 - angV) / (4.78 - 3.65) * (PI/2) + (PI/4); /* V to V */
+// Gear angle in radians
+ServoAng = (angV - 4.78) / (3.65 - 4.78) * (PI/2) - (PI/4); /* V to V */
 /* SCALING end */
 
 if (Loop  < 3) {   /* all shift registers cleared after 3rd iteration; this statement initializes the shift registers */
@@ -38,7 +39,7 @@ if (Loop  < 3) {   /* all shift registers cleared after 3rd iteration; this stat
     /* Place your gear angle SATURATOR below */
 
     /* Place your inner loop GEAR ANGLE CONTROLLER below */
-    u = -3 * (ref - ServoAng);
+    u = ServoAng - ref;
   }
 }
     
