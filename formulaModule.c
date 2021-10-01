@@ -3,7 +3,7 @@ float K_1 = 1;
 float TAU = 1;
 float PI = 3.14159;
 float V_neg_45 = 4.765;
-float V_pos_45 = 3.66;
+float V_pos_45 = 3.65;
 
 /*  Insert below the code for your scaling, saturation block, and
    controllers.*/
@@ -45,11 +45,11 @@ if (Loop < 3) {
     BallPosn = 0; // REMOVE this line when the ball is being used on the beam
 
     /* Place your gear angle SATURATOR below */
-    // if (ThRef > PI / 4) {
-    //   ThRef = PI / 4;
-    // } else if (ThRef < -PI / 4) {
-    //   ThRef = -PI / 4;
-    // }
+    if (ThRef > 0.7) {
+      ThRef = 0.7;
+    } else if (ThRef < -0.7) {
+      ThRef = -0.7;
+    }
 
     /* Place your inner loop GEAR ANGLE CONTROLLER below */
     u = -C_1 * (ThRef - ServoAng);
