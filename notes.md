@@ -1,3 +1,3 @@
 ## Stiction values:
-- CW: 0.65V
-- CCW: -0.95V
+- CW: 0.55V
+- CCW: -0.85V
