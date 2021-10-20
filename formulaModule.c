@@ -1,9 +1,14 @@
-float C_1 = 15;
-float K_1 = 1;
-float TAU = 1;
-float PI = 3.14159;
+// C_1 = ( -1.204931478672254 * z + 1.032681063701449) / (z -0.960962180870512)
+float A_0 =  -1.204931478672254;
+float A_1 = 1.032681063701449;
+float B_0 = 1.0;
+float B_1 = -0.960962180870512;
 float V_neg_45 = 4.765;
-float V_pos_45 = 3.65;
+float V_pos_45 = 3.650;
+float BALL_LEFT_V = 3.255;
+float BALL_RIGHT_V = 7.315;
+float BEAM_LENGTH = 417;
+float LEVER_END_RADIUS = 25.4;
 
 /*  Insert below the code for your scaling, saturation block, and
    controllers.*/
@@ -18,11 +23,12 @@ value of "e1" from  the previous iteration. */
 /* Place your sensor SCALING here */
 /* NO scaling is provided for the demo */
 
-BallPosn = posV; /* V to V */
+// Ball position in mm
+BallPosn = BEAM_LENGTH / (BALL_RIGHT_V - BALL_LEFT_V) * (posV - BALL_LEFT_V); 
 
 // Gear angle in radians
-ServoAng = (angV - V_neg_45) / (V_pos_45 - V_neg_45) * (PI / 2) -
-           (PI / 4); /* V to V */
+ServoAng = (angV - V_neg_45) / (V_pos_45 - V_neg_45) * (pi / 2) -
+           (pi / 4);
 
 /**************** SCALING END ****************/
 
@@ -33,8 +39,10 @@ if (Loop < 3) {
 } else {
   if (Manual) {/*manual motor voltage control*/
     u = MotV;
-  } else {/*control algorithm*/
+  } else { /*control algorithm*/
     ThRef = ref;
+    
+    float phi = asin(LEVER_END_RADIUS / BEAM_LENGTH * sin(ThRef));
 
     /* CAUTION: DO NOT load the output of a nonlinear block (e.g., saturator,
     offset) into a SHIFT REGISTER,
@@ -42,7 +50,7 @@ if (Loop < 3) {
     separate variables to hold nonlinear values.*/
 
     /* Place your outer loop BALL POSITION CONTROLLER below */
-    BallPosn = 0; // REMOVE this line when the ball is being used on the beam
+    // BallPosn = phi; // REMOVE this line when the ball is being used on the beam
 
     /* Place your gear angle SATURATOR below */
     if (ThRef > 0.7) {
@@ -51,8 +59,10 @@ if (Loop < 3) {
       ThRef = -0.7;
     }
 
+    e = ThRef - ServoAng;
+
     /* Place your inner loop GEAR ANGLE CONTROLLER below */
-    u = -C_1 * (ThRef - ServoAng);
+    u = 1 / B_0 * (-B_1 * u1 + A_0 * e + A_1 * e1);
   }
 }
 
