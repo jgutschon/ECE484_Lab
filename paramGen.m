@@ -4,16 +4,16 @@ T_SETTLING = 0.25;
 
 ZETA_MAX = -log(OS_dec)/sqrt(pi^2 + log(OS_dec)^2);
 THETA_MAX = rad2deg(acos(ZETA_MAX));
-RE_S_MAX = -4/T_SETTLING;
+RE_S_MAX = -4 / T_SETTLING;
 
 K_1 = -2.185;  % rad/Vs
 TAU = 0.0178;  % s
 
 %%%%% FIRST-ORDER C(s) %%%%%
 % Because P has pole at 0, that means that e_ss will reach 0
-DOM_POLE_RE = -64;
+DOM_POLE_RE = RE_S_MAX * 4; % note this should be negative
 DOM_POLE = [1 -DOM_POLE_RE];
-NON_DOM_POLES_RE = RE_S_MAX;
+NON_DOM_POLES_RE = RE_S_MAX; % note this should be negative
 NON_DOM_POLES_C = 9;
 % ang = rad2deg(atan(NON_DOM_POLES_C/NON_DOM_POLES_RE))
 NON_DOM_POLES = [1 ...
@@ -37,10 +37,16 @@ T = 0.001;
 D = c2d(C, T);
 tfinal = 2;
 sim('general_SD_model.slx', tfinal);
-min = min(Uk)
-max = max(Uk);
-range = max - min
+V_minimum = min(Uk)
+V_maximum = max(Uk);
+range = V_maximum - V_minimum;
 % plot(Ysd)
-first_2percent = find(Ysd>0.672,1)
+last_2percent = find(Ysd < 0.672 | Ysd > 0.728, 1, 'last')
 
+format long
 [NUM,DEN]=tfdata(D,'v');
+
+fprintf('float A_0 = %.15f;\n', NUM(1));
+fprintf('float A_1 = %.15f;\n', NUM(2));
+fprintf('float B_0 = %.15f;\n', DEN(1));
+fprintf('float B_1 = %.15f;\n', DEN(2));
