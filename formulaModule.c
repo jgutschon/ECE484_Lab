@@ -1,8 +1,10 @@
 // C_1 = ( -1.204931478672254 * z + 1.032681063701449) / (z -0.960962180870512)
-float A_0 = 1.871384310801432;
-float A_1 = -2.090858526061850;
-float B_0 = 1.0;
-float B_1 = -0.945709135734579;
+// Controller Coefficients
+float A_0 = -1.204931478672254;
+float A_1 = 1.032681063701449;
+float B_0 = 1.000000000000000;
+float B_1 = -0.960962180870512;
+
 float V_neg_45 = 4.765;
 float V_pos_45 = 3.650;
 float BALL_LEFT_V = 3.255;
@@ -27,8 +29,7 @@ value of "e1" from  the previous iteration. */
 BallPosn = BEAM_LENGTH / (BALL_RIGHT_V - BALL_LEFT_V) * (posV - BALL_LEFT_V); 
 
 // Gear angle in radians
-ServoAng = (angV - V_neg_45) / (V_pos_45 - V_neg_45) * (pi / 2) -
-           (pi / 4);
+ServoAng = (angV - V_neg_45) / (V_pos_45 - V_neg_45) * (pi / 2) - (pi / 4);
 
 /**************** SCALING END ****************/
 
