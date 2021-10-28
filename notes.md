@@ -15,3 +15,9 @@
 - lower limit: -0.1
 - CW: 0.37 V
 - CCW: -1.0 V
+
+### Final stiction with beam & limts:
+- upper limit: 0.001
+- lower limit: -0.001
+- CW: 0.18 V
+- CCW: -0.64 V
