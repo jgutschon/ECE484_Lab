@@ -7,10 +7,9 @@ float B_1 = -0.960962180870512;
 
 float V_neg_45 = 4.765;
 float V_pos_45 = 3.650;
-float BALL_LEFT_V = 3.255;
-float BALL_RIGHT_V = 7.315;
-float BEAM_LENGTH = 417;
-float LEVER_END_RADIUS = 25.4;
+float BALL_LEFT_V = 3.290;
+float BALL_RIGHT_V = 7.320;
+float BEAM_LENGTH = 0.417;
 
 /*  Insert below the code for your scaling, saturation block, and
    controllers.*/
@@ -25,7 +24,7 @@ value of "e1" from  the previous iteration. */
 /* Place your sensor SCALING here */
 /* NO scaling is provided for the demo */
 
-// Ball position in mm
+// Ball position in m
 BallPosn = BEAM_LENGTH / (BALL_RIGHT_V - BALL_LEFT_V) * (posV - BALL_LEFT_V); 
 
 // Gear angle in radians
@@ -43,7 +42,7 @@ if (Loop < 3) {
   } else { /*control algorithm*/
     ThRef = ref;
     
-    float phi = asin(LEVER_END_RADIUS / BEAM_LENGTH * sin(ThRef));
+    float phi = 0.0560 * ThRef;
 
     /* CAUTION: DO NOT load the output of a nonlinear block (e.g., saturator,
     offset) into a SHIFT REGISTER,
@@ -51,8 +50,7 @@ if (Loop < 3) {
     separate variables to hold nonlinear values.*/
 
     /* Place your outer loop BALL POSITION CONTROLLER below */
-    // BallPosn = phi; // REMOVE this line when the ball is being used on the beam
-
+    
     /* Place your gear angle SATURATOR below */
     if (ThRef > 0.7) {
       ThRef = 0.7;
