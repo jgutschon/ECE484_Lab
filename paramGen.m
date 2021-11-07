@@ -1,4 +1,5 @@
-clear;
+clear all;
+close all;
 OS_dec = 0.05;
 T_SETTLING = 0.25;
 
@@ -35,12 +36,35 @@ C = tf([C_COEFF(3) C_COEFF(4)], [C_COEFF(1) C_COEFF(2)]);
 % SIMULINK PARAMETERS
 T = 0.001;
 D = c2d(C, T);
-tfinal = 2;
+tfinal = 4.5;
 sim('general_SD_model.slx', tfinal);
 V_minimum = min(Uk)
 V_maximum = max(Uk);
 range = V_maximum - V_minimum;
-% plot(Ysd)
+
+% plot
+% experimental data
+exp_angle = xlsread('7Vwithoutbeam.xlsx', 'Sheet1', 'C2:C10002');
+exp_time = xlsread('7Vwithoutbeam.xlsx', 'Sheet1', 'A2:A10002');
+exp_ref = xlsread('7Vwithoutbeam.xlsx', 'Sheet1', 'B2:B10002');
+
+start = 1500;
+size = tfinal*1000;
+plot(t_sim(start:size), Ysd(start:size));
+hold on;
+plot(exp_time(start:size), exp_angle(start:size));
+hold on;
+plot(exp_time(start:size), exp_ref(start:size), 'Color', 'k');
+
+title('Sampled-Data System Response - Simulated vs. Experimental');
+ylabel('Gear Angle (rad)');
+xlabel('Time (sec)');
+xlim([start/1000 tfinal])
+legend('Simulated', 'Experimental', 'Reference Signal', 'Location', 'southeast');
+grid on;
+
+
+% Output variables
 last_2percent = find(Ysd < 0.672 | Ysd > 0.728, 1, 'last')
 
 format long
