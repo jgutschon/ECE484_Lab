@@ -1,9 +1,9 @@
 ## Stiction
 
-### Without beam (old, needs to be updated)
+### Without beam
 
 - CW: 0.46 V
-- CCW: -.47 V
+- CCW: -0.47 V
 
 ### Stiction with beam & limts:
 - upper limit: 0.001
