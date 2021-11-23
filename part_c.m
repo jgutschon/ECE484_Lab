@@ -129,24 +129,30 @@ sim('general_SD_model.slx', tfinal);
 % fprintf('float B2_3 = %.15f;\n', DEN(4));
 
 %% LAB 3 PART E %%
-NON_DOM_POLES_BALL_RE = 0.75 * RE_S_BALL_MAX;
+OS_ball = 0.45;
+T_SETTLING_ball = 7;
+T_SETTLING_OVERALL = T_SETTLING_ball - T_SETTLING;
+ZETA_BALL_MAX = -log(OS_ball)/sqrt(pi^2 + log(OS_ball)^2);
+THETA_BALL_MAX = rad2deg(acos(ZETA_BALL_MAX));
+RE_S_BALL_MAX = -4 / T_SETTLING_OVERALL;
+
+NON_DOM_POLES_BALL_RE = 1 * RE_S_BALL_MAX;
 NON_DOM_POLES_BALL_C = 0;
 NON_DOM_POLES_BALL = conv([1 -NON_DOM_POLES_BALL_RE + NON_DOM_POLES_BALL_C * 1i], [1 -NON_DOM_POLES_BALL_RE - NON_DOM_POLES_BALL_C * 1i]);
 
-NON_DOM_POLES_BALL_RE2 = 15.25 * RE_S_BALL_MAX;
+NON_DOM_POLES_BALL_RE2 = 5 * RE_S_BALL_MAX;
 NON_DOM_POLES_BALL_C2 = 0 * -atan(deg2rad(THETA_BALL_MAX)) * NON_DOM_POLES_BALL_RE2;
 
 NON_DOM_POLES_BALL2 = conv([1 -NON_DOM_POLES_BALL_RE2 + NON_DOM_POLES_BALL_C2 * 1i], [1 -NON_DOM_POLES_BALL_RE2 - NON_DOM_POLES_BALL_C2 * 1i]);
 
-% DOM_POLE = [1 -40*RE_S_BALL_MAX];
-DOM_POLE = [1 -2.5 * RE_S_BALL_MAX];
+DOM_POLE = [1 -3 * RE_S_BALL_MAX];
 
 CP_DES = conv(NON_DOM_POLES_BALL, NON_DOM_POLES_BALL2);
 CP_DES = conv(CP_DES, DOM_POLE).';
 
 C_2_COEFF = linsolve(A, CP_DES);
 C_2 = tf([C_2_COEFF(4), C_2_COEFF(5), C_2_COEFF(6)], [C_2_COEFF(1), C_2_COEFF(2), C_2_COEFF(3) 0]);
-D_2 = c2d(C_2, T, "tustin");
+D_2 = c2d(C_2, T);
 sim('general_SD_model.slx', tfinal);
 
 y_cycle = y(25000:37500);
@@ -156,3 +162,14 @@ theta_max = max(abs(min(theta_cycle)), abs(max(theta_cycle)))
 os_perc = (max(y_cycle) - cycle_ss) / position_amplitude * 100
 y_2settling = find(y_cycle < cycle_ss - position_amplitude * 0.02 | ...
     y_cycle > cycle_ss + position_amplitude * 0.02, 1, 'last') / 1000
+
+format long
+[NUM,DEN]=tfdata(D_2,'v');
+fprintf('float A2_0 = %.15f;\n', NUM(1));
+fprintf('float A2_1 = %.15f;\n', NUM(2));
+fprintf('float A2_2 = %.15f;\n', NUM(3));
+fprintf('float A2_3 = %.15f;\n', NUM(4));
+fprintf('float B2_0 = %.15f;\n', DEN(1));
+fprintf('float B2_1 = %.15f;\n', DEN(2));
+fprintf('float B2_2 = %.15f;\n', DEN(3));
+fprintf('float B2_3 = %.15f;\n', DEN(4));
