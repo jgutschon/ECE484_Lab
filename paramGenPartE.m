@@ -2,8 +2,9 @@ close all;
 
 %%%% SIMULINK PARAMETERS %%%%
 T = 0.001;
-position_offset = 0.15;     % m
-position_amplitude = 0.03;   % 0.15 - 0.25 m
+position_offset = 0.10;     % m
+position_amplitude = 0.15;   % 0.15 - 0.25 m
+pos_ss = position_amplitude + position_offset
 tfinal = 38.0;
 
 %%%% CONSTANTS %%%%
@@ -21,7 +22,7 @@ RE_S_MAX = -4 / T_SETTLING;
 
 %%%% LAB 3 %%%%
 OS_ball = 0.45;
-T_SETTLING_ball = 7;
+T_SETTLING_ball = 8.5;
 T_SETTLING_OVERALL = T_SETTLING_ball - T_SETTLING;
 ZETA_BALL_MAX = -log(OS_ball)/sqrt(pi^2 + log(OS_ball)^2);
 THETA_BALL_MAX = rad2deg(acos(ZETA_BALL_MAX));
@@ -86,15 +87,13 @@ A = [P_DEN(1)   0           0           P_NUM(1)           0    0;
 
 output = []
 begin_complex = 0;
-COMPLEX2=0;  RE_2 = 15 * RE_S_BALL_MAX; RE_1 = 0.75 * RE_S_BALL_MAX;
-RE_3 = 2.5 * RE_S_BALL_MAX;
-
+RE_1 = RE_S_BALL_MAX;
+COMPLEX2 = 0;
 % for RE_1 = 0.05 * RE_S_BALL_MAX : 0.05 * RE_S_BALL_MAX : 4 * RE_S_BALL_MAX
-%     for RE_2 = 15 * RE_S_BALL_MAX : 0.08 * RE_S_BALL_MAX : 40 * RE_S_BALL_MAX
-%         for RE_3 = 0.1 * RE_S_BALL_MAX : 0.1 * RE_S_BALL_MAX : 40 * RE_S_BALL_MAX
-            for COMPLEX2 = begin_complex * -atan(deg2rad(THETA_BALL_MAX)) * RE_2: 0.05 * -atan(deg2rad(THETA_BALL_MAX)) * RE_2 : 1 * -atan(deg2rad(THETA_BALL_MAX)) * RE_2
+    for RE_2 = 1 * RE_S_BALL_MAX : 0.5 * RE_S_BALL_MAX : 10 * RE_S_BALL_MAX
+        for RE_3 = 1 * RE_S_BALL_MAX : 0.5 * RE_S_BALL_MAX : 20 * RE_S_BALL_MAX
+%             for COMPLEX2 = begin_complex * -atan(deg2rad(THETA_BALL_MAX)) * RE_2: 0.05 * -atan(deg2rad(THETA_BALL_MAX)) * RE_2 : 1 * -atan(deg2rad(THETA_BALL_MAX)) * RE_2
 
-% RE_3 = 2.5 * RE_S_BALL_MAX;
 NON_DOM_POLES_BALL_RE = RE_1;
 NON_DOM_POLES_BALL_C = 0;
 NON_DOM_POLES_BALL = conv([1 -NON_DOM_POLES_BALL_RE + NON_DOM_POLES_BALL_C * 1i], [1 -NON_DOM_POLES_BALL_RE - NON_DOM_POLES_BALL_C * 1i]);
@@ -114,53 +113,15 @@ sim('general_SD_model.slx', tfinal);
 y_cycle = y(25000:37500);
 theta_cycle = theta(25000:37500);
 theta_max = max(abs(min(theta_cycle)), abs(max(theta_cycle)));
-os_perc = (max(y_cycle) - 0.18) / 0.03 * 100;
-y_2settling = find(y_cycle < 0.18 - 0.03 * 0.02 | y_cycle > 0.18 + 0.03 * 0.02, 1, 'last') / 1000;
+os_perc = (max(y_cycle) - pos_ss) / position_amplitude * 100;
+y_2settling = find(y_cycle < pos_ss - position_amplitude * 0.02 ...
+    | y_cycle > pos_ss + position_amplitude * 0.02, 1, 'last') / 1000;
 output = [output; RE_1, RE_2, COMPLEX2, RE_3, theta_max, os_perc, y_2settling;]
-% if theta_max > .7
-%     if complex_portion == begin_complex * -atan(deg2rad(THETA_BALL_MAX)) * RE_2
-%         complex_portion = -1;
-%     end
-%     break
-% end
 %             end
 %             if complex_portion == -1
 %                 break
 %             end
 %         end
     end
-% end
+end
 
-
-% % NON_DOM_POLES_BALL_RE = RE_S_BALL_MAX;
-% % NON_DOM_POLES_BALL_C = 0;
-% % NON_DOM_POLES_BALL = conv([1 -NON_DOM_POLES_BALL_RE + NON_DOM_POLES_BALL_C * 1i], [1 -NON_DOM_POLES_BALL_RE - NON_DOM_POLES_BALL_C * 1i]);
-% % 
-% % NON_DOM_POLES_BALL_RE2 = 5*RE_S_BALL_MAX;
-% % NON_DOM_POLES_BALL_C2 = -atan(deg2rad(THETA_BALL_MAX)) * NON_DOM_POLES_BALL_RE2;;
-% % 
-% % NON_DOM_POLES_BALL2 = conv([1 -NON_DOM_POLES_BALL_RE2 + NON_DOM_POLES_BALL_C2 * 1i], [1 -NON_DOM_POLES_BALL_RE2 - NON_DOM_POLES_BALL_C2 * 1i]);
-% % 
-% % % DOM_POLE = [1 -40*RE_S_BALL_MAX];
-% % DOM_POLE = [1 -10*RE_S_BALL_MAX];
-% % 
-% % CP_DES = conv(NON_DOM_POLES_BALL, NON_DOM_POLES_BALL2);
-% % CP_DES = conv(CP_DES, DOM_POLE).';
-
-C_2_COEFF = linsolve(A, CP_DES);
-C_2 = tf([C_2_COEFF(4), C_2_COEFF(5), C_2_COEFF(6)], [C_2_COEFF(1), C_2_COEFF(2), C_2_COEFF(3) 0]);
-D_2 = c2d(C_2, T, "tustin");
-sim('general_SD_model.slx', tfinal);
-y_cycle = y(25000:37500);
-theta_cycle = theta(25000:37500);
-theta_max = max(abs(min(theta_cycle)), abs(max(theta_cycle)))
-os_perc = (max(y_cycle) - 0.18) / 0.03 * 100
-y_2settling = find(y_cycle < 0.18 - 0.03 * 0.02 | y_cycle > 0.18 + 0.03 * 0.02, 1, 'last') / 1000
-
-% format long
-% [NUM,DEN]=tfdata(D,'v');
-
-% fprintf('float A2_0 = %.15f;\n', NUM(1));
-% fprintf('float A2_1 = %.15f;\n', NUM(2));
-% fprintf('float B2_0 = %.15f;\n', DEN(1));
-% fprintf('float B2_1 = %.15f;\n', DEN(2));

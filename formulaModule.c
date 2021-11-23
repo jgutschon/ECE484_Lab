@@ -5,11 +5,33 @@ float A1_1 = 1.032681063701449;
 float B1_0 = 1.000000000000000;
 float B1_1 = -0.960962180870512;
 
-// C_2 = (A2_0 * z + A2_1)/(B2_0 * z + B2_1)
-float A2_0 = -7.000000000000000;
-float A2_1 = 6.997553059949510;
-float B2_0 = 1.000000000000000;
-float B2_1 = -0.997503122397460;
+// C_LEAD_2 = (A_LEAD_0 * z + A_LEAD_1)/ B_LEAD_0 * z + B_LEAD_1)
+float A_LEAD_0 = -7.000000000000000;
+float A_LEAD_1 = 6.997553059949510;
+float B_LEAD_0 = 1.000000000000000;
+float B_LEAD_1 = -0.997503122397460;
+
+// // C_2 = (A2_0 * z^3 + A2_1 * z^2 + A2_2 * z + A2_3)
+// //       / (B2_0 * z^3 + B2_1 * z^2 + B2_2 * z + B2_3)
+// float A2_0 = -0.295404446074768;
+// float A2_1 = 0.295232270026272;
+// float A2_2 = 0.295404414174432;
+// float A2_3 = -0.295232301926608;
+// float B2_0 = 1.000000000000000;
+// float B2_1 = -2.979638314061477;
+// float B2_2 = 2.959401373706974;
+// float B2_3 = -0.979763059645498;
+
+// // C_2 = (A2_0 * z^3 + A2_1 * z^2 + A2_2 * z + A2_3)
+// //       / (B2_0 * z^3 + B2_1 * z^2 + B2_2 * z + B2_3)
+// float A2_0 = -0.295404446074768;
+// float A2_1 = 0.295232270026272;
+// float A2_2 = 0.295404414174432;
+// float A2_3 = -0.295232301926608;
+// float B2_0 = 1.000000000000000;
+// float B2_1 = -2.979638314061477;
+// float B2_2 = 2.959401373706974;
+// float B2_3 = -0.979763059645498;
 
 // Measurement Scaling Constants
 float V_neg_45 = 4.765;
@@ -46,7 +68,13 @@ if (Loop < 3) {
 
     /* Place your outer loop BALL POSITION CONTROLLER below */
     ePos = ref - BallPosn;
-    ThRef = 1 / B2_0 * (-B2_1 * ThRef1 + A2_0 * ePos + A2_1 * ePos1);
+
+    // LEAD CONTROLLER METHOD
+    // ThRef = 1 / B_LEAD_0 * (-B_LEAD_1 * ThRef1 + A_LEAD_0 * ePos + A_LEAD_1 *
+    // ePos1);
+    ThRef = 1 / B2_0 *
+            (-B2_1 * ThRef1 - B2_2 * ThRef2 - B2_3 * ThRef3 + A2_0 * ePos +
+             A2_1 * ePos1 + A2_2 * ePos2 + A2_3 * ePos3);
 
     float ThRefSaturated = ThRef;
     // GEAR ANGLE SATURATOR
