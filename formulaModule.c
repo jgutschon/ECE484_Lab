@@ -68,14 +68,15 @@ if (Loop < 3) {
     // LEAD CONTROLLER METHOD
     // ThRef = 1 / B_LEAD_0 * (-B_LEAD_1 * ThRef1 + A_LEAD_0 * ePos + A_LEAD_1 *
     // ePos1);
+
     ThRef = 1 / B2_0 *
             (-B2_1 * ThRef1 - B2_2 * ThRef2 - B2_3 * ThRef3 + A2_0 * ePos +
              A2_1 * ePos1 + A2_2 * ePos2 + A2_3 * ePos3);
 
     float ThRefAdjusted = ThRef;
     
-    if (abs(ePos) > MIN_STICTION_RANGE && abs(ePos) < MAX_STICTION_RANGE)
-    {
+    // BALL STICTION OFFSET
+    if (abs(ePos) > MIN_STICTION_RANGE && abs(ePos) < MAX_STICTION_RANGE) {
       int e_sgn = (ePos > 0) - (ePos < 0);
       ThRefAdjusted += e_sgn * -BALL_STICTION_OFFSET;
     }
