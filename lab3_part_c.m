@@ -1,10 +1,11 @@
+clear all;
 close all;
 
 %%%% SIMULINK PARAMETERS %%%%
 T = 0.001;
 position_offset = 0.15;     % m
 position_amplitude = 0.03;   % 0.15 - 0.18 m
-tfinal = 38.0;
+tfinal = 80;
 
 %%%% CONSTANTS %%%%
 K_1 = -2.185;  % rad/Vs
@@ -77,19 +78,60 @@ C_2_COEFF = linsolve(A, CP_DES);
 C_2 = tf([C_2_COEFF(4), C_2_COEFF(5), C_2_COEFF(6)], [C_2_COEFF(1), C_2_COEFF(2), C_2_COEFF(3) 0]);
 D_2 = c2d(C_2, T, "tustin");
 sim('general_SD_model.slx', tfinal);
-y_cycle = y(25000:37500);
-theta_cycle = theta(25000:37500);
+
+%% Specifications Output
+range = 40000:50000;
+y_cycle = y(range);
+y_ref_cycle = y_ref(range);
+theta_cycle = theta(range);
+
 theta_max = max(abs(min(theta_cycle)), abs(max(theta_cycle)))
 os_perc = (max(y_cycle) - 0.18) / 0.03 * 100
 y_2settling = find(y_cycle < 0.18 - 0.03 * 0.02 | y_cycle > 0.18 + 0.03 * 0.02, 1, 'last') / 1000
 
+%% Plot
+range = 30000:50000;
+hold on;
+
+yyaxis left;
+plot(t_sim(range), y(range), 'Color', '#0072BD');
+plot(t_sim(range), y_ref(range), '-', 'Color', '#000000');
+ylim([0.13 0.2])
+ylabel('Ball Position [m]');
+
+yyaxis right;
+plot(t_sim(range), theta(range), 'Color', '#D95319');
+ylim([-0.7 0.7])
+ylabel('Reference Gear Angle [rad]');
+
+legend('Ball Postition', 'Reference Position', 'Reference Gear Angle');
+xlabel('Time [s]');
+
+grid on;
+ax = gca;
+ax.YAxis(1).Color = 'black';
+ax.YAxis(2).Color = 'black';
+
+hold off;
+
 %% LAB 3 PART D %%
-position_offset = 0.10;     % m
-position_amplitude = 0.15;   % 0.10 - 0.25 m
-tfinal = 38.0;
+% position_offset = 0.10;     % m
+% position_amplitude = 0.15;   % 0.10 - 0.25 m
+% tfinal = 38.0;
+% 
+% sim('general_SD_model.slx', tfinal);
 
-sim('general_SD_model.slx', tfinal);
+%% Plot
+% Experimental data
+% theta_ref_exp = xlsread('lab3partc2.xlsx', 'Sheet1', 'F20002:F40002');
+% y_exp = xlsread('lab3partc2.xlsx', 'Sheet1', 'D20002:D40002');
+% t_exp = xlsread('lab3partc2.xlsx', 'Sheet1', 'A20002:A20002');
 
+% plot(t_exp, y_exp);
+% hold on;
+% plot(t_exp, theta_ref_exp);
+
+% % Parameters Output
 % format long
 % [NUM,DEN]=tfdata(D_2,'v');
 % fprintf('float A2_0 = %.15f;\n', NUM(1));
