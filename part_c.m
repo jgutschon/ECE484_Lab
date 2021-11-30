@@ -3,9 +3,15 @@ close all;
 
 %%%% SIMULINK PARAMETERS %%%%
 T = 0.001;
+tfinal = 80;
+
+% Part C
 position_offset = 0.15;     % m
 position_amplitude = 0.03;   % 0.15 - 0.18 m
-tfinal = 80;
+
+% Part D
+% position_offset = 0.10;     % m
+% position_amplitude = 0.15;   % 0.10 - 0.25 m
 
 %%%% CONSTANTS %%%%
 K_1 = -2.185;  % rad/Vs
@@ -86,10 +92,12 @@ y_ref_cycle = y_ref(range);
 theta_cycle = theta(range);
 
 theta_max = max(abs(min(theta_cycle)), abs(max(theta_cycle)))
-os_perc = (max(y_cycle) - 0.18) / 0.03 * 100
-y_2settling = find(y_cycle < 0.18 - 0.03 * 0.02 | y_cycle > 0.18 + 0.03 * 0.02, 1, 'last') / 1000
+ref_max = position_offset + position_amplitude;
+os_perc = (max(y_cycle) - ref_max) / position_amplitude * 100
+y_2settling = find(y_cycle < ref_max - position_amplitude * 0.02 | y_cycle > ref_max + position_amplitude * 0.02, 1, 'last') / 1000
 
 %% Plot
+% Simulated
 range = 30000:50000;
 hold on;
 
@@ -114,15 +122,7 @@ ax.YAxis(2).Color = 'black';
 
 hold off;
 
-%% LAB 3 PART D %%
-% position_offset = 0.10;     % m
-% position_amplitude = 0.15;   % 0.10 - 0.25 m
-% tfinal = 38.0;
-% 
-% sim('general_SD_model.slx', tfinal);
-
-%% Plot
-% Experimental data
+% % Experimental data
 % theta_ref_exp = xlsread('lab3partc2.xlsx', 'Sheet1', 'F20002:F40002');
 % y_exp = xlsread('lab3partc2.xlsx', 'Sheet1', 'D20002:D40002');
 % t_exp = xlsread('lab3partc2.xlsx', 'Sheet1', 'A20002:A20002');
