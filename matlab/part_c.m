@@ -4,14 +4,9 @@ close all;
 %%%% SIMULINK PARAMETERS %%%%
 T = 0.001;
 tfinal = 80;
-
-% Part C
+period = 40;
 position_offset = 0.15;     % m
 position_amplitude = 0.03;   % 0.15 - 0.18 m
-
-% Part D
-% position_offset = 0.10;     % m
-% position_amplitude = 0.15;   % 0.10 - 0.25 m
 
 %%%% CONSTANTS %%%%
 K_1 = -2.185;  % rad/Vs
@@ -85,20 +80,33 @@ C_2 = tf([C_2_COEFF(4), C_2_COEFF(5), C_2_COEFF(6)], [C_2_COEFF(1), C_2_COEFF(2)
 D_2 = c2d(C_2, T, "tustin");
 sim('general_SD_model.slx', tfinal);
 
+% Parameters Output
+format long
+[NUM,DEN]=tfdata(D_2,'v');
+fprintf('float A2_0 = %.15f;\n', NUM(1));
+fprintf('float A2_1 = %.15f;\n', NUM(2));
+fprintf('float A2_2 = %.15f;\n', NUM(3));
+fprintf('float A2_3 = %.15f;\n', NUM(4));
+fprintf('float B2_0 = %.15f;\n', DEN(1));
+fprintf('float B2_1 = %.15f;\n', DEN(2));
+fprintf('float B2_2 = %.15f;\n', DEN(3));
+fprintf('float B2_3 = %.15f;\n', DEN(4));
+
 %% Specifications Output
-range = 40000:50000;
+range = 40000:60000;
 y_cycle = y(range);
+y_rounded = round(y_cycle, 4);
 y_ref_cycle = y_ref(range);
 theta_cycle = theta(range);
 
 theta_max = max(abs(min(theta_cycle)), abs(max(theta_cycle)))
 ref_max = position_offset + position_amplitude;
-os_perc = (max(y_cycle) - ref_max) / position_amplitude * 100
-y_2settling = find(y_cycle < ref_max - position_amplitude * 0.02 | y_cycle > ref_max + position_amplitude * 0.02, 1, 'last') / 1000
+os_perc = (max(y_rounded) - ref_max) / position_amplitude * 100
+y_2settling = find(y_rounded < ref_max - position_amplitude * 0.02 | y_rounded > ref_max + position_amplitude * 0.02, 1, 'last') / 1000
 
 %% Plot
 % Simulated
-range = 30000:50000;
+range = 20000:60000;
 hold on;
 
 yyaxis left;
@@ -121,24 +129,3 @@ ax.YAxis(1).Color = 'black';
 ax.YAxis(2).Color = 'black';
 
 hold off;
-
-% % Experimental data
-% theta_ref_exp = xlsread('lab3partc2.xlsx', 'Sheet1', 'F20002:F40002');
-% y_exp = xlsread('lab3partc2.xlsx', 'Sheet1', 'D20002:D40002');
-% t_exp = xlsread('lab3partc2.xlsx', 'Sheet1', 'A20002:A20002');
-
-% plot(t_exp, y_exp);
-% hold on;
-% plot(t_exp, theta_ref_exp);
-
-% % Parameters Output
-% format long
-% [NUM,DEN]=tfdata(D_2,'v');
-% fprintf('float A2_0 = %.15f;\n', NUM(1));
-% fprintf('float A2_1 = %.15f;\n', NUM(2));
-% fprintf('float A2_2 = %.15f;\n', NUM(3));
-% fprintf('float A2_3 = %.15f;\n', NUM(4));
-% fprintf('float B2_0 = %.15f;\n', DEN(1));
-% fprintf('float B2_1 = %.15f;\n', DEN(2));
-% fprintf('float B2_2 = %.15f;\n', DEN(3));
-% fprintf('float B2_3 = %.15f;\n', DEN(4));
