@@ -120,7 +120,7 @@ plot(t_sim(range), theta(range), 'Color', '#D95319');
 ylim([-0.7 0.7])
 ylabel('Reference Gear Angle [rad]');
 
-legend('Ball Postition', 'Reference Position', 'Reference Gear Angle');
+legend('Ball Position', 'Reference Position', 'Reference Gear Angle');
 xlabel('Time [s]');
 
 grid on;
