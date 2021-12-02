@@ -54,9 +54,19 @@ C_2 = -7 * tf([1, 0.35], [1, 2.5]);
 D_2 = c2d(C_2, T);
 sim('general_SD_model.slx', tfinal);
 
-%% Plot
-% Simulated
-range = 30000:60000;
+% Specifications Output
+range = 30000:45000;
+y_cycle = y(range);
+y_ref_cycle = y_ref(range);
+theta_cycle = theta(range);
+
+theta_max = max(abs(min(theta_cycle)), abs(max(theta_cycle)))
+ref_max = position_offset + position_amplitude;
+os_perc = (max(y_cycle) - ref_max) / position_amplitude * 100
+y_2settling = find(y_cycle < ref_max - position_amplitude * 0.02 | y_cycle > ref_max + position_amplitude * 0.02, 1, 'last') / 1000
+
+% Plot Simulated
+range = 15000:45000;
 figure(1);
 hold on;
 
@@ -70,7 +80,7 @@ plot(t_sim(range), theta(range), 'Color', '#D95319');
 ylabel('Reference Gear Angle [rad]');
 
 legend('Ball Position', 'Reference Position', 'Reference Gear Angle');
-xlim([30 60]);
+xlim([15 45]);
 xlabel('Time [s]');
 
 grid on;
