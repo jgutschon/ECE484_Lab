@@ -1,12 +1,10 @@
-clear all;
 close all;
 
 %%%% SIMULINK PARAMETERS %%%%
 T = 0.001;
-tfinal = 80;
-period = 30;
 position_offset = 0.15;     % m
-position_amplitude = 0.1;   % 0.15 - 0.25 m
+position_amplitude = 0.03;   % 0.15 - 0.25 m
+tfinal = 38.0;
 
 %%%% CONSTANTS %%%%
 K_1 = -2.185;  % rad/Vs
@@ -48,34 +46,17 @@ INNER_LOOP_PLANT = THETA_REF_TO_THETA * THETA_TO_PHI * PHI_TO_Y;
 P = INNER_LOOP_PLANT;
 
 %% LAB 3 PART A %%
+
 C_2 = -7 * tf([1, 0.35], [1, 2.5]);
 
 % SIMULINK PARAMETERS
 D_2 = c2d(C_2, T);
 sim('general_SD_model.slx', tfinal);
 
-%% Plot
-% Simulated
-range = 30000:60000;
-figure(1);
-hold on;
-
-yyaxis left;
-plot(t_sim(range), y(range), 'Color', '#0072BD');
-plot(t_sim(range), y_ref(range), '-', 'Color', '#000000');
-ylabel('Ball Position [m]');
-
-yyaxis right;
-plot(t_sim(range), theta(range), 'Color', '#D95319');
-ylabel('Reference Gear Angle [rad]');
-
-legend('Ball Position', 'Reference Position', 'Reference Gear Angle');
-xlim([30 60]);
-xlabel('Time [s]');
-
-grid on;
-ax = gca;
-ax.YAxis(1).Color = 'black';
-ax.YAxis(2).Color = 'black';
-
-hold off;
+% LAB 3 PART B %%
+format long
+[NUM,DEN]=tfdata(D_2,'v');
+fprintf('float A2_0 = %.15f;\n', NUM(1));
+fprintf('float A2_1 = %.15f;\n', NUM(2));
+fprintf('float B2_0 = %.15f;\n', DEN(1));
+fprintf('float B2_1 = %.15f;\n', DEN(2));
